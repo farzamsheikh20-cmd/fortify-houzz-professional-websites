@@ -1,1 +1,10 @@
-
+{
+  "actorSpecification": 1,
+  "name": "fortify-houzz-professional-websites",
+  "title": "Fortify Houzz Professional Websites",
+  "version": "1.0",
+  "buildTag": "latest",
+  "input": "./input_schema.json",
+  "storages": { "dataset": "./dataset_schema.json" },
+  "dockerfile": "../Dockerfile"
+}

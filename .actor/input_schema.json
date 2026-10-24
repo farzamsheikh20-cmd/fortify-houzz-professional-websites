@@ -1,0 +1,97 @@
+{
+  "title": "Houzz contractor, architect and designer websites",
+  "description": "Add one or more Houzz professional-directory URLs, discover public company profiles, collect external websites and contacts, and prevent duplicates across runs.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "title": "Houzz directory URLs",
+      "description": "Paste Houzz professional search, category, trade, city or state URLs. Add as many directory URLs as needed.",
+      "type": "array",
+      "editor": "stringList",
+      "default": ["https://www.houzz.com/professionals/general-contractor/california-us-probr0-bo~t_11786~r_5332921"],
+      "items": { "type": "string" }
+    },
+    "maximumNewCompanies": {
+      "title": "Maximum new companies this run",
+      "description": "Stop after this many new unique company websites are collected.",
+      "type": "integer",
+      "editor": "number",
+      "default": 100,
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "maximumProfilesVisited": {
+      "title": "Maximum profiles visited this run",
+      "description": "Maximum Houzz professional profiles opened during one run.",
+      "type": "integer",
+      "editor": "number",
+      "default": 200,
+      "minimum": 1,
+      "maximum": 15000
+    },
+    "maximumListingPagesThisRun": {
+      "title": "Maximum listing pages this run",
+      "description": "Maximum Houzz result pages discovered during one run across all supplied URLs.",
+      "type": "integer",
+      "editor": "number",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "requireWebsite": {
+      "title": "Require external company website",
+      "description": "Output only profiles containing a public website outside Houzz.",
+      "type": "boolean",
+      "editor": "checkbox",
+      "default": true
+    },
+    "collectEmails": {
+      "title": "Collect public profile emails",
+      "description": "Collect email addresses already displayed publicly on the Houzz profile.",
+      "type": "boolean",
+      "editor": "checkbox",
+      "default": true
+    },
+    "visitCompanyWebsitesForEmails": {
+      "title": "Visit company websites for emails",
+      "description": "Optionally open the collected company homepage and extract publicly displayed emails. This makes runs slower.",
+      "type": "boolean",
+      "editor": "checkbox",
+      "default": false
+    },
+    "campaignName": {
+      "title": "Campaign name",
+      "description": "Keep unchanged on continuation runs so queues and duplicate protection are preserved.",
+      "type": "string",
+      "editor": "textfield",
+      "default": "houzz-professional-websites"
+    },
+    "resetProgress": {
+      "title": "Reset saved progress",
+      "description": "Erase this campaign's saved queues and duplicate history before the run.",
+      "type": "boolean",
+      "editor": "checkbox",
+      "default": false
+    },
+    "pageTimeoutSecs": {
+      "title": "Page navigation timeout",
+      "description": "Maximum seconds allowed for loading one listing, profile or company website.",
+      "type": "integer",
+      "editor": "number",
+      "default": 60,
+      "minimum": 15,
+      "maximum": 180
+    },
+    "delayMillis": {
+      "title": "Delay between pages",
+      "description": "Polite waiting time in milliseconds after page navigation.",
+      "type": "integer",
+      "editor": "number",
+      "default": 1200,
+      "minimum": 0,
+      "maximum": 30000
+    }
+  },
+  "required": ["startUrls", "maximumNewCompanies", "maximumProfilesVisited", "maximumListingPagesThisRun", "campaignName"]
+}

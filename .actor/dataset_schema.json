@@ -1,0 +1,35 @@
+{
+  "actorSpecification": 1,
+  "fields": {
+    "companyName": { "type": "string" },
+    "website": { "type": "string" },
+    "websiteDomain": { "type": "string" },
+    "email": { "type": ["string", "null"] },
+    "allPublicEmails": { "type": "array", "items": { "type": "string" } },
+    "phone": { "type": ["string", "null"] },
+    "address": { "type": ["string", "null"] },
+    "categories": { "type": "array", "items": { "type": "string" } },
+    "houzzProfileUrl": { "type": "string" },
+    "sourceDirectoryUrl": { "type": ["string", "null"] },
+    "collectedAt": { "type": "string" }
+  },
+  "views": {
+    "overview": {
+      "title": "Houzz professional websites",
+      "transformation": {
+        "fields": ["companyName", "website", "email", "phone", "address", "categories", "houzzProfileUrl"]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "companyName": { "label": "Company", "format": "text" },
+          "website": { "label": "Website", "format": "link" },
+          "email": { "label": "Email", "format": "text" },
+          "phone": { "label": "Phone", "format": "text" },
+          "address": { "label": "Address", "format": "text" },
+          "houzzProfileUrl": { "label": "Houzz profile", "format": "link" }
+        }
+      }
+    }
+  }
+}
