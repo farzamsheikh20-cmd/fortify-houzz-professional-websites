@@ -1,0 +1,14 @@
+{
+  "name": "fortify-houzz-professional-websites",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "apify": "^3.7.2",
+    "playwright": "^1.55.0"
+  },
+  "engines": { "node": ">=20" }
+}
