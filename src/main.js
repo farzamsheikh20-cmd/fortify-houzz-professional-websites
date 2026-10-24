@@ -55,7 +55,11 @@ async function save() {
 }
 if (input.resetProgress) await save();
 
-const browser = await chromium.launch({ headless: true, args: ['--disable-dev-shm-usage', '--no-sandbox'] });
+const browser = await chromium.launch({
+  headless: true,
+  executablePath: process.env.APIFY_CHROME_EXECUTABLE_PATH || process.env.APIFY_DEFAULT_BROWSER_PATH || '/usr/bin/google-chrome',
+  args: ['--disable-dev-shm-usage', '--no-sandbox', '--disable-gpu']
+});
 const context = await browser.newContext({ userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136 Safari/537.36' });
 const page = await context.newPage();
 page.setDefaultTimeout(Math.min(input.pageTimeoutSecs * 1000, 30000));
