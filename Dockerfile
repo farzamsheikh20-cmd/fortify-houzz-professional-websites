@@ -1,5 +1,9 @@
 FROM apify/actor-node-playwright-chrome:20
-COPY package*.json ./
-RUN npm --quiet set progress=false && npm install --omit=dev --no-audit
-COPY . ./
+
+COPY --chown=myuser:myuser package*.json ./
+
+RUN npm ci --omit=dev --no-audit --no-fund
+
+COPY --chown=myuser:myuser . ./
+
 CMD ["npm", "start"]
