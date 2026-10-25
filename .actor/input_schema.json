@@ -60,6 +60,20 @@
       "editor": "checkbox",
       "default": false
     },
+    "useResidentialProxy": {
+      "title": "Use Apify residential proxy",
+      "description": "Use a US residential IP because Houzz rejects normal Apify data-center addresses with HTTP 403.",
+      "type": "boolean",
+      "editor": "checkbox",
+      "default": true
+    },
+    "proxyCountryCode": {
+      "title": "Proxy country code",
+      "description": "Two-letter country code for the residential proxy. Use US for Houzz United States directories.",
+      "type": "string",
+      "editor": "textfield",
+      "default": "US"
+    },
     "campaignName": {
       "title": "Campaign name",
       "description": "Keep unchanged on continuation runs so queues and duplicate protection are preserved.",
