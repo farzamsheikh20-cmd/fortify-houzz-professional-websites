@@ -23,6 +23,8 @@ GitHub-ready Apify Actor for public Houzz professional directories. Add Houzz co
   "requireWebsite": true,
   "collectEmails": true,
   "visitCompanyWebsitesForEmails": false,
+  "useResidentialProxy": true,
+  "proxyCountryCode": "US",
   "campaignName": "houzz-california-test",
   "resetProgress": true,
   "pageTimeoutSecs": 60,
