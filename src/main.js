@@ -124,6 +124,22 @@ async function discoverListings() {
   while (progress.listingQueue.length && pages < input.maximumListingPagesThisRun) {
     const item = progress.listingQueue.shift();
     if (!item?.url || seenListingUrls.has(item.url)) continue;
+    if (isHouzzProfile(item.url)) {
+      const key = profileKey(item.url);
+      if (key && !discoveredProfiles.has(key) && !seenProfileKeys.has(key)) {
+        discoveredProfiles.add(key);
+        pending.push({ url: item.url, sourceUrl: item.sourceUrl });
+      }
+      const recoveryUrl = normalizeUrl(item.sourceUrl);
+      if (recoveryUrl && !isHouzzProfile(recoveryUrl) && !progress.listingQueue.some(queued => queued.url === recoveryUrl)) {
+        seenListingUrls.delete(recoveryUrl);
+        progress.listingQueue.unshift({ url: recoveryUrl, sourceUrl: recoveryUrl });
+      }
+      seenListingUrls.add(item.url);
+      await save();
+      log.warning('Removed a profile URL from the listing queue', { url: item.url });
+      continue;
+    }
     try {
       const navigation = await navigate(item.url);
       const links = await page.locator('a[href]').evaluateAll(elements => elements.map(a => ({ href: a.href, text: (a.innerText || '').trim(), rel: a.rel || '' })));
@@ -148,9 +164,16 @@ async function discoverListings() {
         pending.push({ url, sourceUrl: item.sourceUrl });
         added++;
       }
-      const next = links.find(link => /next page|next/i.test(link.text) || /next/i.test(link.rel));
+      const currentListing = new URL(item.url);
+      const next = links.find(link => {
+        if (!/next page|next/i.test(link.text) && !/next/i.test(link.rel)) return false;
+        const candidate = normalizeUrl(link.href);
+        if (!candidate || isHouzzProfile(candidate)) return false;
+        try { return new URL(candidate).pathname === currentListing.pathname; }
+        catch { return false; }
+      });
       let nextUrl = normalizeUrl(next?.href);
-      if (!nextUrl && profileCandidates.some(isHouzzProfile)) {
+      if (!nextUrl && !isHouzzProfile(item.url) && profileCandidates.some(isHouzzProfile)) {
         const current = new URL(item.url);
         const currentOffset = Number.parseInt(current.searchParams.get('fi') || '0', 10);
         current.searchParams.set('fi', String(currentOffset + 15));
