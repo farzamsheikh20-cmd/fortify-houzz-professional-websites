@@ -24,3 +24,12 @@ test('prioritizes a real website and blocks Houzz', () => {
 test('extracts unique public emails', () => {
   assert.deepEqual(emailsFrom('Info@Test.com and info@test.com, user@example.com'), ['info@test.com']);
 });
+
+test('decodes the real company website from a Houzz tracking link', () => {
+  const html = '<div data-component="Website"><h3>Website</h3><a href="https://www.houzz.com/trk/aHR0cHM6Ly9wbGF0aW51bS1ob21lYnVpbGRlcnMuY29t/abc">platinum-homebuilders.com</a></div>';
+  assert.equal(extractWebsite(html, []), 'https://platinum-homebuilders.com/');
+});
+
+test('rejects image filenames that resemble email addresses', () => {
+  assert.deepEqual(emailsFrom('cover_placeholder_large@2x.png real.person@examplebuilder.com'), ['real.person@examplebuilder.com']);
+});

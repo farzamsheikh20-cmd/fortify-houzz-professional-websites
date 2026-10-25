@@ -1,4 +1,4 @@
-const BLOCKED_HOSTS = ['houzz.com','facebook.com','instagram.com','linkedin.com','pinterest.com','twitter.com','x.com','youtube.com','tiktok.com','google.com','apple.com'];
+const BLOCKED_HOSTS = ['houzz.com','feedburner.com','facebook.com','instagram.com','linkedin.com','pinterest.com','twitter.com','x.com','youtube.com','tiktok.com','google.com','apple.com'];
 
 export const clean = (value) => String(value || '').replace(/\s+/g, ' ').trim();
 
@@ -47,6 +47,14 @@ export function unwrapExternalUrl(value) {
   try {
     let url = new URL(decodeCandidate(value));
     if (/(^|\.)houzz\.com$/i.test(url.hostname)) {
+      const trackingToken = url.pathname.match(/^\/trk\/([^/]+)/i)?.[1];
+      if (trackingToken) {
+        try {
+          const padded = trackingToken.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(trackingToken.length / 4) * 4, '=');
+          const decoded = Buffer.from(padded, 'base64').toString('utf8');
+          if (/^https?:\/\//i.test(decoded)) return normalizeUrl(decoded);
+        } catch {}
+      }
       for (const key of ['url','u','target','redirect','redirect_url','to']) {
         const nested = url.searchParams.get(key);
         if (nested && /^https?:/i.test(decodeCandidate(nested))) return normalizeUrl(decodeCandidate(nested));
@@ -64,17 +72,18 @@ export function isExternalWebsite(value) {
 }
 
 export function extractWebsite(html, links = []) {
+  const decodedHtml = decodeCandidate(html);
+  const websiteSectionHref = decodedHtml.match(/data-component=["']Website["'][\s\S]{0,2000}?href=["']([^"']+)["']/i)?.[1];
+  const websiteSectionUrl = unwrapExternalUrl(websiteSectionHref);
+  if (isExternalWebsite(websiteSectionUrl)) return websiteSectionUrl;
   const prioritized = links.filter(link => /website|visit site|web site/i.test(clean(link.text))).map(link => unwrapExternalUrl(link.href)).find(isExternalWebsite);
   if (prioritized) return prioritized;
-  const anyExternal = links.map(link => unwrapExternalUrl(link.href)).find(isExternalWebsite);
-  if (anyExternal) return anyExternal;
-  const decoded = decodeCandidate(html);
   const patterns = [
     /"(?:websiteUrl|website_url|businessWebsite|externalUrl)"\s*:\s*"(https?:[^"\\]+(?:\\.[^"\\]*)*)"/gi,
     /(?:Website|Visit Website)[\s\S]{0,500}?(https?:\/\/[^"'<>\s]+)/gi
   ];
   for (const pattern of patterns) {
-    for (const match of decoded.matchAll(pattern)) {
+    for (const match of decodedHtml.matchAll(pattern)) {
       const candidate = unwrapExternalUrl(match[1]);
       if (isExternalWebsite(candidate)) return candidate;
     }
@@ -84,5 +93,9 @@ export function extractWebsite(html, links = []) {
 
 export function emailsFrom(value) {
   const matches = String(value || '').match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [];
-  return [...new Set(matches.map(email => email.toLowerCase()).filter(email => !/example\.(com|org|net)$/.test(email) && !/@(?:houzz|sentry|wixpress)\./.test(email)))];
+  return [...new Set(matches.map(email => email.toLowerCase()).filter(email =>
+    !/example\.(com|org|net)$/.test(email)
+    && !/@(?:houzz|sentry|wixpress)\./.test(email)
+    && !/\.(?:png|jpe?g|gif|webp|svg|ico|css|js|woff2?|ttf|eot)$/i.test(email)
+  ))];
 }
